@@ -1,0 +1,13 @@
+{
+  "region": "us-east-1",
+  "privateZone": false,
+  "domain": "kevintownsend.dev",
+  "subdomains": [
+    {
+      "domain": "www.kevintownsend.dev",
+      "distributionId": "E3E392CFHEBML6",
+      "url": "https://dwaoq9zdfkkg6.cloudfront.net",
+      "type": "awsCloudFront"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+.DS_Store
+.env
+
+node_modules
+.next
+
+**/mariadb
+wordpress/src/setup/*.xml

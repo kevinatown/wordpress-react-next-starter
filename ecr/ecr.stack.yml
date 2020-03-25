@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  WPServiceName:
+    Type: String
+    Description: ECR Repository Name
+  FrontendServiceName:
+    Type: String
+    Description: ECR Repository Name for Frontend Service
+
+
+Resources:
+  WPServiceRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Ref WPServiceName
+  FrontendServiceRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Ref FrontendServiceName
+
+Outputs:
+  WPServiceRepository:
+    Value: !Ref 'WPServiceRepository'
+    Export:
+      Name: !Sub '${AWS::StackName}-WPServiceRepository'
+  WPServiceRepositoryUrl:
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${WPServiceRepository}"
+    Export:
+      Name: !Sub '${AWS::StackName}-WPServiceRepositoryUrl'
+  FrontendServiceRepository:
+    Value: !Ref 'FrontendServiceRepository'
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendServiceRepository'
+  FrontendServiceRepositoryUrl:
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${FrontendServiceRepository}"
+    Export:
+      Name: !Sub '${AWS::StackName}-FrontendServiceRepositoryUrl'

@@ -1,0 +1,38 @@
+version: 0.1
+stack:
+  name: '${env.STACK_NAME}-wp' # Note: Update this with your stack name
+  template:
+    file: wp.stack.yml
+    bucket: '${env.STACK_NAME}' # Note: Update this with your bucket name.  Stacks are uploaded here prior to deployment.'
+
+  #
+  # Define stack input parameters.
+  #
+  parameters:
+    VPCStack: '${env.STACK_NAME}-vpc'
+    ECSStack: '${env.STACK_NAME}-ecs'
+    RDSStack: '${env.STACK_NAME}-rds'
+    ECRStack: '${env.STACK_NAME}-ecr'
+    Version: 'latest'
+    WPServicePath: '/*'
+    TLD: '${env.TLD}'
+    Domain: 'cdn.${env.TLD}'
+    SSL: '${env.SSL}'
+    WordpressURL: 'cms.${env.TLD}'
+    WordpressTitle: '${env.WORDPRESS_TITLE}'
+    WordpressAdminUser: '${env.WORDPRESS_ADMIN_USER}'
+    WordpressAdminPassword: '${env.WORDPRESS_ADMIN_PASSWORD}'
+    WordpressAdminEmail: '${env.WORDPRESS_ADMIN_EMAIL}'
+    WordpressPermalinkStructure: '${env.WORDPRESS_PERMALINK_STRUCTURE}'
+
+  #
+  # Define stack capabilities required.
+  #
+  capabilities:
+    - 'CAPABILITY_NAMED_IAM'
+
+  #
+  # Define global tags.
+  #
+  tags:
+    project: '${env.STACK_NAME}'

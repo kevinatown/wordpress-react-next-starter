@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  db_headless:
+    restart: always
+    container_name: db_headless
+    env_file: ../../.env
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_PASSWORD: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_ROOT_HOST: "%"
+    image: mariadb
+    ports:
+      - '3307:3306'
+    volumes:
+      - ./mariadb:/var/lib/mysql
+  headless_wordpress:
+    build: .
+    #image: wordpress
+    restart: always
+    depends_on:
+      - db_headless
+    # env_file: ../../.env
+    ports:
+      - 8080:80
+    environment:
+      IS_LOCAL: "true"
+      WORDPRESS_DB_HOST: db_headless
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DEBUG: "true"
+      WORDPRESS_URL: http://0.0.0.0:8080
+      WORDPRESS_TITLE: Wordpess
+      WORDPRESS_ADMIN_USER: admin
+      WORDPRESS_ADMIN_PASSWORD: password
+      WORDPRESS_ADMIN_EMAIL: email@email.com
+      WORDPRESS_PERMALINK_STRUCTURE: /%year%/%monthnum%/%day%/%postname%/
+      # WORDPRESS_ADDITIONAL_CONFIG: |
+      #   define( 'AS3CF_AWS_USE_EC2_IAM_ROLE', true );

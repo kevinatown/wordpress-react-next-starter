@@ -1,0 +1,28 @@
+version: 0.1
+stack:
+  name: '${env.STACK_NAME}-ecs' # Note: Update this with your stack name
+  template:
+    file: ecs.stack.yml
+    bucket: '${env.STACK_NAME}' # Note: Update this with your bucket name.  Stacks are uploaded here prior to deployment.'
+
+  #
+  # Define stack input parameters.
+  #
+  parameters:
+    KeyPairName: '${env.KEYPAIR_NAME}'
+    VPCStack: '${env.STACK_NAME}-vpc'
+    TLD: '${env.TLD}'
+    Domain: 'cms.${env.TLD}'
+    SSL: '${env.SSL}'
+
+  #
+  # Define stack capabilities required.
+  #
+  capabilities:
+    - 'CAPABILITY_IAM'
+
+  #
+  # Define global tags.
+  #
+  tags:
+    project: '${env.STACK_NAME}'

@@ -1,0 +1,29 @@
+version: 0.1
+stack:
+  name: '${env.STACK_NAME}-rds' # Note: Update this with your stack name
+  template:
+    file: rds.stack.yml
+    bucket: '${env.STACK_NAME}' # Note: Update this with your bucket name.  Stacks are uploaded here prior to deployment.'
+  policy:
+    file: rds.policy.json
+    bucket: '${env.STACK_NAME}'
+  #
+  # Define stack input parameters.
+  #
+  parameters:
+    VPCStack: '${env.STACK_NAME}-vpc'
+    ECSStack: '${env.STACK_NAME}-ecs'
+    DatabaseUsername: '${env.DATABASE_USERNAME}'
+    DatabasePassword: '${env.DATABASE_PASSWORD}'
+
+  #
+  # Define stack capabilities required.
+  #
+  capabilities:
+    - 'CAPABILITY_IAM'
+
+  #
+  # Define global tags.
+  #
+  tags:
+    project: '${env.STACK_NAME}'
