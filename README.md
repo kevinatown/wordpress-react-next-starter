@@ -26,6 +26,31 @@ This project contains 5 CloudFormation scripts.  They must be created in order b
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingHostedZone.html
 
+## Env File
+```
+STACK_NAME=
+TLD=
+DOMAIN=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+KEYPAIR_NAME=
+AWS_REGION=
+SSL=
+WORDPRESS_URL=
+WORDPRESS_TITLE=
+WORDPRESS_ADMIN_USER=
+WORDPRESS_ADMIN_PASSWORD=
+WORDPRESS_ADMIN_EMAIL=
+WORDPRESS_PERMALINK_STRUCTURE=
+```
+
+
+## Read Env File and run command
+
+```bash
+eval $(egrep -v '^#' ../.env | xargs) cim stack-up
+```
+
 
 # Stacks
 
