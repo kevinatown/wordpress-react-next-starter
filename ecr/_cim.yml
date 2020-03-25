@@ -9,7 +9,7 @@ stack:
   # Define stack input parameters.
   #
   parameters:
-    WPServiceName: 'wordpress'
+    WPServiceName: '${env.STACK_NAME}-wordpress'
 
   #
   # Define stack capabilities required.
