@@ -1,6 +1,7 @@
 FROM wordpress:latest
 
 # RUN mv "$PHP_INI_DIR"/php.ini-development "$PHP_INI_DIR"/php.ini
+ARG WORDPRESS_XML_FILE
 
 # Install unzip mariadb-client
 RUN apt-get update; \
@@ -13,7 +14,7 @@ RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
   chown www-data:www-data /var/www/.wp-cli
 
 COPY ./setup/configure_wp.sh /usr/local/bin/
-COPY ./setup/eraofgoodfeeling.wordpress.2020-02-28.001.xml /var/www/eraofgoodfeeling.wordpress.2020-02-28.001.xml
+COPY ./setup/$WORDPRESS_XML_FILE /var/www/$WORDPRESS_XML_FILE
 
 RUN rm -rf /usr/src/wordpress
 RUN chown -R www-data:www-data /var/www/html
