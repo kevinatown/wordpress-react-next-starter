@@ -10,7 +10,6 @@ stack:
   #
   parameters:
     WPServiceName: 'wordpress'
-    FrontendServiceName: 'frontend'
 
   #
   # Define stack capabilities required.

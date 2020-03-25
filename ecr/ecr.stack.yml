@@ -3,9 +3,6 @@ Parameters:
   WPServiceName:
     Type: String
     Description: ECR Repository Name
-  FrontendServiceName:
-    Type: String
-    Description: ECR Repository Name for Frontend Service
 
 
 Resources:
@@ -13,10 +10,6 @@ Resources:
     Type: AWS::ECR::Repository
     Properties: 
       RepositoryName: !Ref WPServiceName
-  FrontendServiceRepository: 
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: !Ref FrontendServiceName
 
 Outputs:
   WPServiceRepository:
@@ -27,11 +20,4 @@ Outputs:
     Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${WPServiceRepository}"
     Export:
       Name: !Sub '${AWS::StackName}-WPServiceRepositoryUrl'
-  FrontendServiceRepository:
-    Value: !Ref 'FrontendServiceRepository'
-    Export:
-      Name: !Sub '${AWS::StackName}-FrontendServiceRepository'
-  FrontendServiceRepositoryUrl:
-    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${FrontendServiceRepository}"
-    Export:
-      Name: !Sub '${AWS::StackName}-FrontendServiceRepositoryUrl'
+      
