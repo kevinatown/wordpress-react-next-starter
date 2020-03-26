@@ -199,7 +199,7 @@ wp theme delete --allow-root twentysixteen twentyseventeen twentynineteen
 
 wp plugin delete --allow-root akismet hello
 
-wp import "/var/www/${WORDPRESS_XML_FILE}" \
+WP_MAX_MEMORY_LIMIT=128M wp import "/var/www/${WORDPRESS_XML_FILE}" \
   --skip=attachment \
   --authors=create \
   --skip-themes \
