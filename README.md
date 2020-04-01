@@ -52,6 +52,10 @@ WORDPRESS_XML_FILE=
 eval $(egrep -v '^#' ../.env | xargs) cim stack-up
 ```
 
+delete stack:
+```bash
+eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
+```
 
 # Stacks
 
