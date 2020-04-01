@@ -17,6 +17,12 @@ if [ "${IS_LOCAL:=false}" == "true" ] && ! $mysql_ready; then
 fi
 
 
+if wp core is-installed --allow-root 
+then
+    echo "WordPress is already installed, exiting."
+    exit 0
+fi
+
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -205,8 +211,6 @@ WP_MAX_MEMORY_LIMIT=128M wp import "/var/www/${WORDPRESS_XML_FILE}" \
   --allow-root
 
 wp rewrite structure "$WORDPRESS_PERMALINK_STRUCTURE" --allow-root
-
-wp rewrite flush --allow-root
 
 echo 'WP is configured, moving appache to foreground'
 

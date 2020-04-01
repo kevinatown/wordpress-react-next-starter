@@ -24,7 +24,7 @@ stack:
     WordpressAdminPassword: '${env.WORDPRESS_ADMIN_PASSWORD}'
     WordpressAdminEmail: '${env.WORDPRESS_ADMIN_EMAIL}'
     WordpressPermalinkStructure: '${env.WORDPRESS_PERMALINK_STRUCTURE}'
-    WordpressXmlStructure: '${env.WORDPRESS_XML_FILE}'
+    WordpressXmlFile: '${env.WORDPRESS_XML_FILE}'
 
   #
   # Define stack capabilities required.

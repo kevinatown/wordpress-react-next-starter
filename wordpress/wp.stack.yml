@@ -63,7 +63,7 @@ Parameters:
     Type: String
     Description: Permalink structure for wordpress
     Default: '/%year%/%monthnum%/%day%/%postname%/'
-  WordpressXmlStructure:
+  WordpressXmlFile:
     Type: String
     Description: XML file for imports
     Default: ''
@@ -365,7 +365,7 @@ Resources:
             - Name: WORDPRESS_PERMALINK_STRUCTURE
               Value: !Sub "${WordpressPermalinkStructure}"
             - Name: WORDPRESS_XML_FILE
-              Value: !Sub "${WordpressXmlStructure}"
+              Value: !Sub "${WordpressXmlFile}"
         # - Name: !Sub
         #     - "frontend_${stack}"
         #     - stack: !Ref AWS::StackName
