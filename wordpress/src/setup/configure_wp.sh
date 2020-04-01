@@ -210,7 +210,7 @@ WP_MAX_MEMORY_LIMIT=128M wp import "/var/www/${WORDPRESS_XML_FILE}" \
   --skip-themes \
   --allow-root
 
-wp rewrite structure "$WORDPRESS_PERMALINK_STRUCTURE" --allow-root
+wp rewrite structure "$WORDPRESS_PERMALINK_STRUCTURE" --allow-root --hard
 
 echo 'WP is configured, moving appache to foreground'
 
