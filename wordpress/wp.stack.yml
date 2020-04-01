@@ -67,6 +67,10 @@ Parameters:
     Type: String
     Description: XML file for imports
     Default: ''
+  WordpressDbCharset: 
+    Type: String
+    Description: Charset for DB 
+    Default: 'utf8'
 
 Conditions:
   UseCustomDomain: !And
@@ -366,6 +370,8 @@ Resources:
               Value: !Sub "${WordpressPermalinkStructure}"
             - Name: WORDPRESS_XML_FILE
               Value: !Sub "${WordpressXmlFile}"
+            - Name: WORDPRESS_DB_CHARSET
+              Value: !Sub ${WordpressDbCharset}
         # - Name: !Sub
         #     - "frontend_${stack}"
         #     - stack: !Ref AWS::StackName
