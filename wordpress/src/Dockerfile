@@ -16,6 +16,7 @@ RUN curl -sL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 COPY ./setup/configure_wp.sh /usr/local/bin/
 COPY ./setup/$WORDPRESS_XML_FILE /var/www/$WORDPRESS_XML_FILE
 COPY ./setup/wp-cli.yml /var/www/
+COPY ./setup/mod_twentytwenty.zip /var/www/mod_twentytwenty.zip
 
 RUN rm -rf /usr/src/wordpress
 RUN chown -R www-data:www-data /var/www/html

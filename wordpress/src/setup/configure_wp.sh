@@ -199,9 +199,8 @@ wp plugin install --activate --force --allow-root \
     # https://github.com/wp-graphql/wp-graphql/archive/v0.3.6.zip \
     # https://github.com/wp-graphql/wp-graphql-jwt-authentication/archive/V0.3.2.zip
 
-
-wp theme activate --allow-root twentytwenty
-wp theme delete --allow-root twentysixteen twentyseventeen twentynineteen
+wp theme install --allow-root --activate /var/www/mod_twentytwenty.zip
+wp theme delete --allow-root twentysixteen twentyseventeen twentynineteen twentytwenty
 
 wp plugin delete --allow-root akismet hello
 
