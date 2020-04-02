@@ -150,26 +150,6 @@ Resources:
                 Forward: none
               Headers:
                 - All
-          -
-            TargetOriginId: 'wp-alb'
-            PathPattern: '/index.php/wp-json/*'
-            MinTTL: 0
-            MaxTTL: 60000
-            DefaultTTL: 10000
-            ViewerProtocolPolicy: !If [UseCustomDomain, "redirect-to-https", "allow-all"]
-            AllowedMethods:
-              - 'HEAD'
-              - 'GET'
-            CachedMethods:
-              - 'HEAD'
-              - 'GET'
-            ForwardedValues:
-              QueryString: false
-              Cookies:
-                Forward: none
-              # TODO: FIX THIS
-              Headers:
-                - All
         Origins:
           -
             Id: !Ref MediaBucket
