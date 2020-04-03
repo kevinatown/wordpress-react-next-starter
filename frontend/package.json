@@ -21,6 +21,7 @@
     "wpapi": "^1.2.1"
   },
   "devDependencies": {
+    "babel-plugin-styled-components": "^1.10.7",
     "react-svg-loader": "^3.0.3",
     "serverless-next.js": "^1.9.5"
   }
