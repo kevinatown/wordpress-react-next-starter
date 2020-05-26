@@ -127,7 +127,7 @@ Next enable some of the plugins we added.
 
 Add a few blog posts and pages.
 
-Then check out the API. Ex: `https://cdn.kevintownsend.dev/wp-json/wp/v2/posts`
+Then check out the API. Ex: `https://cdn.<your_url>/wp-json/wp/v2/posts`
 
 # Tear down
 ```
