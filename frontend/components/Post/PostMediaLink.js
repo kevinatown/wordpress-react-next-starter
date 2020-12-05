@@ -8,7 +8,6 @@ const ArticleMediaWrapper = styled.article`
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
-  
   display: flex;
   margin:  ${({ isSmall, isHeader }) => isSmall ? '0' : isHeader ?
     `0 0 ${SIZES.s}` : `${SIZES.s} 0`};  
@@ -30,7 +29,7 @@ const ArticleExcerpt = styled.div`
 `;
 
 
-const PostMediaLink = ({ post, isSmall=false, isHeader=false, isFeatureCatPost=false }) => {
+const PostMediaLink = ({ post, isSmall=false, isHeader=false }) => {
 
   const {
     featured_media, 
@@ -48,7 +47,6 @@ const PostMediaLink = ({ post, isSmall=false, isHeader=false, isFeatureCatPost=f
       mediaSrc={source_url}
       isSmall={isSmall}
       isHeader={isHeader}
-      isFeatureCatPost={isFeatureCatPost}
     >
       <Link
         as={`/post/${slug}`}
