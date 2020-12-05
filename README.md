@@ -79,8 +79,8 @@ cd wordpress/src
 - Build Image
   - `docker build -t headless-wordpress .`
 - [Push Image](http://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
-  - `docker tag headless-wp <account>.dkr.ecr.us-east-1.amazonaws.com/headless-wordpress:latest`
-  - `docker push <account-id>.dkr.ecr.<region>.amazonaws.com/hheadless-wordpress`
+  - `docker tag headless-wp <account>.dkr.ecr.<region>.amazonaws.com/headless-wordpress:latest`
+  - `docker push <account-id>.dkr.ecr.<region>.amazonaws.com/headless-wordpress`
 
 #### Update Version
 Make sure the `Version` parameter, in _cim.yml, matches the `version` tag from above.  The ECS Task Definition will pull the image from ECR.

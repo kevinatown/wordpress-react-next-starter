@@ -360,32 +360,6 @@ Resources:
               Value: !Sub ${WordpressDbCharset}
             - Name: INIT_DB
               Value: !Sub "${InitDB}"
-        # - Name: !Sub
-        #     - "frontend_${stack}"
-        #     - stack: !Ref AWS::StackName
-        #   Essential: true
-        #   Image: !Sub
-        #     - "${URL}:${Version}"
-        #     - {
-        #         URL: { "Fn::ImportValue" : {"Fn::Sub": "${ECRStack}-FrontendServiceRepositoryUrl" } },
-        #         Version: !Ref Version
-        #       }
-        #   Memory: 256
-        #   PortMappings:
-        #     - ContainerPort: 80
-        #   LogConfiguration:
-        #     LogDriver: awslogs
-        #     Options:
-        #       awslogs-group: !Ref AWS::StackName
-        #       awslogs-region: !Ref AWS::Region
-        #   Environment:
-        #     - Name: AWS_REGION
-        #       Value: !Ref AWS::Region
-        #     - Name: AWS_ACCOUNT_ID
-        #       Value: !Ref AWS::AccountId
-        #     - Name: IS_LOCAL
-        #       Value: 'false'
-
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -455,12 +429,7 @@ Resources:
             - stack: !Ref AWS::StackName
           ContainerPort: 80
           TargetGroupArn: !Ref TargetGroup
-        # - ContainerName: !Sub
-        #     - "frontend_${stack}"
-        #     - stack: !Ref AWS::StackName
-        #   ContainerPort: 80
-        #   TargetGroupArn: !Ref TargetGroup
-
+          
 Outputs:
   Service:
     Value: !Ref 'Service'
