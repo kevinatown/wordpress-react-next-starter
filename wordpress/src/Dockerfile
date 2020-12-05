@@ -1,7 +1,6 @@
 FROM wordpress:latest
 
 # RUN mv "$PHP_INI_DIR"/php.ini-development "$PHP_INI_DIR"/php.ini
-ARG WORDPRESS_XML_FILE
 
 # Install unzip mariadb-client
 RUN apt-get update; \

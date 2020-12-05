@@ -1,9 +1,12 @@
 import React from 'react';
+import styled from 'styled-components';
+
+const FooterWrapper = styled.footer``;
 
 const Footer = () => (
-  <div>
+  <FooterWrapper>
     <p>Content to come</p>
-  </div>
+  </FooterWrapper>
 );
 
 export default Footer;

@@ -29,7 +29,7 @@ Parameters:
 
   InstanceType:
     Type: String
-    Default: 'db.t2.small'
+    Default: 'db.t3.micro'
 
 
 Resources:
@@ -59,61 +59,86 @@ Resources:
         Fn::ImportValue:
           !Sub "${VPCStack}-VPCID"
 
-  RDSCluster:
-    Type: AWS::RDS::DBCluster
-    Properties:
-      MasterUsername: !Ref DatabaseUsername
-      MasterUserPassword: !Ref DatabasePassword
-      Engine: aurora
-      #EngineMode: serverless
-      DBSubnetGroupName: !Ref DBSubnetGroup
-      VpcSecurityGroupIds: 
-        - !Ref ClusterSecurityGroup
-      DBClusterParameterGroupName: !Ref RDSDBClusterParameterGroup
-      BackupRetentionPeriod: 7
-      PreferredBackupWindow: 01:00-02:00
-      PreferredMaintenanceWindow: mon:03:00-mon:04:00
+  # RDSCluster:
+  #   Type: AWS::RDS::DBCluster
+  #   Properties:
+  #     MasterUsername: !Ref DatabaseUsername
+  #     MasterUserPassword: !Ref DatabasePassword
+  #     Engine: mariadb
+  #     #EngineMode: serverless
+  #     DBSubnetGroupName: !Ref DBSubnetGroup
+  #     VpcSecurityGroupIds: 
+  #       - !Ref ClusterSecurityGroup
+  #     # DBClusterParameterGroupName: !Ref RDSDBClusterParameterGroup
+  #     BackupRetentionPeriod: 7
+  #     PreferredBackupWindow: 01:00-02:00
+  #     PreferredMaintenanceWindow: mon:03:00-mon:04:00
 
   PrimaryInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       DBSubnetGroupName: !Ref DBSubnetGroup
-      DBParameterGroupName: !Ref RDSDBParameterGroup
-      Engine: aurora
-      DBClusterIdentifier: !Ref RDSCluster
+      # DBParameterGroupName: !Ref RDSDBParameterGroup
+      Engine: mariadb
+      # DBClusterIdentifier: !Ref RDSCluster
       PubliclyAccessible: 'true'
-      AvailabilityZone:
-        Fn::ImportValue:
-          !Sub "${VPCStack}-AvailabilityZone1"
+      MultiAZ: true
+      # AvailabilityZone:
+      #   Fn::ImportValue:
+      #     !Sub "${VPCStack}-AvailabilityZone1"
       DBInstanceClass: !Ref InstanceType
+      AllocatedStorage: '20'
+      MasterUsername: !Ref DatabaseUsername
+      MasterUserPassword: !Ref DatabasePassword
+      BackupRetentionPeriod: 7
+      PreferredBackupWindow: 01:00-02:00
+      PreferredMaintenanceWindow: mon:03:00-mon:04:00
+      VPCSecurityGroups:
+        - !Ref ClusterSecurityGroup
 
-  SecondaryInstance:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBSubnetGroupName: !Ref DBSubnetGroup
-      DBParameterGroupName: !Ref RDSDBParameterGroup
-      Engine: aurora
-      DBClusterIdentifier: !Ref RDSCluster
-      PubliclyAccessible: 'true'
-      AvailabilityZone:
-        Fn::ImportValue:
-          !Sub "${VPCStack}-AvailabilityZone2"
-      DBInstanceClass: !Ref InstanceType
+  # rdsReadReplicaInstance:
+  #   Type: AWS::RDS::DBInstance
+  #   Properties:
+  #     Engine: mariadb
+  #     DBInstanceClass: !Ref InstanceType
+  #     AllocatedStorage: '20'
+  #     CopyTagsToSnapshot: true
+  #     DBSubnetGroupName: !Ref DBSubnetGroup
+  #     AvailabilityZone:
+  #       Fn::ImportValue:
+  #         !Sub "${VPCStack}-AvailabilityZone2"
+  #     DBInstanceIdentifier: 
+  #       !Sub ${AWS::StackName}-acg-read-replica-rds-instance
+  #     SourceDBInstanceIdentifier: !Ref rdsInstance
+
+  # SecondaryInstance:
+  #   Type: AWS::RDS::DBInstance
+  #   Properties:
+  #     DBSubnetGroupName: !Ref DBSubnetGroup
+  #     DBParameterGroupName: !Ref RDSDBParameterGroup
+  #     Engine: mariadb
+  #     DBClusterIdentifier: !Ref RDSCluster
+  #     PubliclyAccessible: 'true'
+  #     AvailabilityZone:
+  #       Fn::ImportValue:
+  #         !Sub "${VPCStack}-AvailabilityZone2"
+  #     DBInstanceClass: !Ref InstanceType
 
 
-  RDSDBClusterParameterGroup:
-    Type: AWS::RDS::DBClusterParameterGroup
-    Properties:
-      Description: CloudFormation Sample Aurora Cluster Parameter Group
-      Family: aurora5.6
-      Parameters:
-        time_zone: US/Eastern
+  # Not valid for non-auroa  
+  # RDSDBClusterParameterGroup:
+  #   Type: AWS::RDS::DBClusterParameterGroup
+  #   Properties:
+  #     Description: CloudFormation Sample mariadb Cluster Parameter Group
+  #     Family: mariadb10.2
+  #     Parameters:
+  #       time_zone: US/Eastern
 
   RDSDBParameterGroup:
     Type: AWS::RDS::DBParameterGroup
     Properties:
-      Description: CloudFormation Sample Aurora Parameter Group
-      Family: aurora5.6
+      Description: CloudFormation Sample mariadb Parameter Group
+      Family: mariadb10.2
       Parameters:
         sql_mode: IGNORE_SPACE
 
@@ -127,6 +152,6 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-DatabasePassword'
   RDSClusterEndpoint:
-    Value: !GetAtt RDSCluster.Endpoint.Address
+    Value: !GetAtt PrimaryInstance.Endpoint.Address
     Export:
       Name: !Sub '${AWS::StackName}-RDSClusterEndpoint'

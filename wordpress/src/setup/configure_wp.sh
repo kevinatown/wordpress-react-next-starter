@@ -1,7 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-
 mysql_ready='nc -z db_headless 3306'
 
 if [ "${IS_LOCAL:=false}" == "true" ] && ! $mysql_ready; then
@@ -11,17 +10,15 @@ if [ "${IS_LOCAL:=false}" == "true" ] && ! $mysql_ready; then
         printf '.'
         sleep 1
     done
-    
-    echo "\n\n\n\n"
     echo "Found MySQL"
 fi
 
+# if wp core is-installed --allow-root 
+# then
+#     echo "WordPress is already installed, exiting."
+#     exit 0
+# fi
 
-if wp core is-installed --allow-root 
-then
-    echo "WordPress is already installed, exiting."
-    exit 0
-fi
 
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
@@ -138,6 +135,8 @@ PHP
 
 echo 'WP config created'
 
+# wp db create --allow-root
+
 php -- <<'EOPHP'
 <?php
 // database might not exist, so let's try creating it (just to be safe)
@@ -188,7 +187,21 @@ wp core install \
 # wp option update blogdescription "$WORDPRESS_DESCRIPTION"
 # wp rewrite structure "$WORDPRESS_PERMALINK_STRUCTURE"
 
-wp plugin install --activate --force --allow-root \
+if [ "${IS_LOCAL:=false}" == "true" ]; then
+  wp config set WP_DEBUG true --allow-root
+  wp config set WP_DEBUG_LOG true --allow-root
+  wp config set WP_DEBUG_DISPLAY true --allow-root
+  wp plugin install --activate --force --allow-root \
+    advanced-custom-fields \
+    custom-post-type-ui \
+    wordpress-importer \
+    acf-to-wp-api \
+    wp-rest-api-v2-menus #\
+    # jwt-authentication-for-wp-rest-api \
+    # https://github.com/wp-graphql/wp-graphql/archive/v0.3.6.zip \
+    # https://github.com/wp-graphql/wp-graphql-jwt-authentication/archive/V0.3.2.zip
+else
+  wp plugin install --activate --force --allow-root \
     amazon-s3-and-cloudfront \
     advanced-custom-fields \
     custom-post-type-ui \
@@ -198,20 +211,31 @@ wp plugin install --activate --force --allow-root \
     # jwt-authentication-for-wp-rest-api \
     # https://github.com/wp-graphql/wp-graphql/archive/v0.3.6.zip \
     # https://github.com/wp-graphql/wp-graphql-jwt-authentication/archive/V0.3.2.zip
+fi
 
 wp theme install --allow-root --activate /var/www/mod_twentytwenty.zip
+
 wp theme delete --allow-root twentysixteen twentyseventeen twentynineteen twentytwenty
 
 wp plugin delete --allow-root akismet hello
+  # --skip=attachment \
 
-WP_MAX_MEMORY_LIMIT=128M wp import "/var/www/${WORDPRESS_XML_FILE}" \
-  --authors=create \
-  --skip-themes \
-  --allow-root
+if [ ! -z ${INIT_DB+x} ]; then
+
+  echo "INIT_DB was set so loading the database"
+
+  WP_MAX_MEMORY_LIMIT=128M wp import /var/www/$WORDPRESS_XML_FILE \
+    --authors=create \
+    --skip-themes \
+    --allow-root
+fi
 
 wp rewrite structure "$WORDPRESS_PERMALINK_STRUCTURE" --allow-root --hard
 
+wp rewrite flush --allow-root --hard
+
 echo 'WP is configured, moving appache to foreground'
+ 
 
 chown -R www-data:www-data /var/www/html
 

@@ -1,47 +1,61 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useEffect } from 'react';
+import styled, { css } from 'styled-components';
+import Headr from './Head';
 import Header from './Header';
 import Menu from './Menu';
 import Footer from './Footer';
+import { COLORS } from '../style';
+import { useScroll } from '../context/scroll';
 
 const LayoutWrapper = styled.div`
-  display: grid;
-  grid-gap: 10px;
-  grid-template-columns: 30% 30% 30%;
-  grid-template-areas:
-    "header  header  header"
-    "content content content"
-    "footer  footer  footer";
-  background-color: #fff;
-  color: #444;
+  background-color: ${COLORS.light_grey};
+  color: ${COLORS.black};
 `;
 
-const HeaderWrapper = styled.header`
+const HeaderWrapper = styled.div`
   grid-area: header;
+  position: fixed;
+  z-index: 2;
+  transition: 0.2s;
+  ${ ({scrollHeight}) =>
+    scrollHeight > 50 ?
+      css`
+        left: 0;
+        right: 0;
+        top: 0;
+      ` :
+      css`
+        left: 10%;
+        top: 10%;
+      `
+  }
 `;
 
 const ContentWrapper = styled.main`
   grid-area: content;
+  position: relative;
 `;
 
-const FooterWrapper = styled.footer`
+const FooterWrapper = styled.div`
   grid-area: footer;
 `;
 
-const Layout = ({ children }) => {
+
+const Layout = ({ children, menu, metaData }) => {
+  const { scrollHeight } = useScroll();
+
   return (
-    <LayoutWrapper>
-      <Header />
-      <HeaderWrapper>
-        <h1> TBD </h1>
-      </HeaderWrapper>
-      <ContentWrapper>
-        {children}
-      </ContentWrapper>
-      <FooterWrapper>
-        <Footer />
-      </FooterWrapper>
-    </LayoutWrapper>
+    <div>
+      <Headr metaData={metaData} />    
+      <LayoutWrapper>
+        <ContentWrapper>
+          <HeaderWrapper scrollHeight={scrollHeight}>
+            <Header menu={menu} />
+          </HeaderWrapper>
+          { children }
+        </ContentWrapper>
+      </LayoutWrapper>
+    </div>
   );
 };
 

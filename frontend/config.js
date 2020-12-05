@@ -1,4 +1,4 @@
-let wpUrl = `https://cdn.kevintownsend.dev/wp-json`;
+let wpUrl = `https://cdn.<YOUR_DOMAIN>/wp-json`;
 
 // If we're running on Docker, use the WordPress container hostname instead of localhost.
 if (process.env.HOME === '/home/node' || process.env.IS_LOCAL) {

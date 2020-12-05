@@ -43,6 +43,10 @@ class Login extends Component {
     const { username, password, message } = this.state;
     const { headerMenu } = this.props;
 
+    if (!headerMenu || !username || headerMenu.length < 1) {
+      return (<p>Coming soon</p>);
+    }
+
     return (
       <Layout>
         <Menu menu={headerMenu} />

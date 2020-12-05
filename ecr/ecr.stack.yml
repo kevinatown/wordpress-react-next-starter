@@ -20,4 +20,3 @@ Outputs:
     Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${WPServiceRepository}"
     Export:
       Name: !Sub '${AWS::StackName}-WPServiceRepositoryUrl'
-      

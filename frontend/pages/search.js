@@ -32,6 +32,10 @@ class Search extends Component {
     const { posts } = this.state;
     const { headerMenu } = this.props;
 
+    if (!headerMenu || !posts || headerMenu.length < 1 || posts.length < 1) {
+      return (<p>Coming soon</p>);
+    }
+
     return (
       <Layout>
         <Menu menu={headerMenu} />

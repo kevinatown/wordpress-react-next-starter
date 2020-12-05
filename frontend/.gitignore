@@ -11,8 +11,6 @@
 # next.js
 /.next/
 /out/
-.serverless_nextjs
-.serverless
 
 # production
 /build

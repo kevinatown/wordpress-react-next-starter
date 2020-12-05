@@ -43,6 +43,10 @@ class Preview extends Component {
     const { post } = this.state;
     const { data } = post || {};
 
+    if (!headerMenu || !post || headerMenu.length < 1) {
+      return (<p>Coming soon</p>);
+    }
+
     if (data && data.status && data.status >= 400) {
       return <Error statusCode={data.status} />;
     }

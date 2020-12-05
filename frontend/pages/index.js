@@ -1,147 +1,190 @@
-import React, { Component } from 'react';
-import Link from 'next/link';
+import React, { useCallback } from 'react';
 import Router from 'next/router';
-import WPAPI from 'wpapi';
+import styled from 'styled-components';
 import Layout from '../components/Layout';
 import PageWrapper from '../components/PageWrapper';
 import Menu from '../components/Menu';
-import Config from '../config';
-import Logo from '../static/images/starter-kit-logo.svg';
+import PostList from '../components/PostList';
+import PostMediaLink from '../components/Post/PostMediaLink';
+import { getNavigation, getPosts, getCategories } from '../actions';
+import { COLORS, SIZES } from '../style';
 
-const wp = new WPAPI({ endpoint: Config.apiUrl });
+const FeaturedPostWrapper = styled.div`
 
+`;
 
-const tokenExpired = () => {
-  if (process.browser) {
-    localStorage.removeItem(Config.AUTH_TOKEN);
+const PostsContainer = styled.div`
+  display: flex;
+  @media screen and (min-width:600px) {
+    margin: ${SIZES.s};
   }
-  wp.setHeaders('Authorization', '');
-  Router.push('/login');
-};
+`;
 
-class Index extends Component {
-  state = {
-    id: '',
+const CatPostContainer = styled(PostsContainer)`
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-height: 60vh;
+  @media screen and (min-width:600px) {
+    flex-wrap: nowrap;
+  }
+`;
+
+const CatPostWrapper = styled.div`
+  flex-basis: 100%;
+  overflow: hidden;
+  margin: 1rem;
+  background: ${COLORS.magenta};
+  box-shadow: 0px 2px 5px 3px ${COLORS.black};
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border-radius: 15px;
+  &:hover {
+    box-shadow: 0px 2px 11px 2px ${COLORS.green} 
+  }
+`;
+
+const CatPostHeaderWrapper = styled.div`
+  position: absolute;
+  background-color: rgba(85,85,85,0.8);
+  width: 100%;
+`
+
+// maybe not this, not sure
+// border-left: 0.25rem solid ${COLORS.red};
+const CatPostHeader = styled.h2`
+  color: ${COLORS.white};
+  text-align: center;
+  margin: 0.75rem;
+`
+
+export async function getServerSideProps({ query }) {
+  const { page = 1 } = query;
+  const perPage = page * 10;
+  const [ headerMenu, { posts: featuredPosts, total, totalPages }, musicCat, tvCat, filmCat ] = await Promise.all([
+    getNavigation(),
+    getPosts({}),
+    getCategories({ slug: 'music' }),
+    getCategories({ slug: 'tv' }),
+    getCategories({ slug: 'film' }),
+  ]);
+
+  const featuredPost = featuredPosts && featuredPosts[0] || 0;
+  const { posts: featuredMusics } = await getPosts({
+    cat: musicCat?.id,
+    ignore: [ featuredPost?.id ]
+  });
+  const featuredMusic = featuredMusics && featuredMusics[0] || 0;
+
+  const { posts: featuredTvs } = await getPosts({
+    cat: tvCat?.id,
+    ignore: [ featuredPost?.id, featuredMusic?.id ]
+  });
+  const featuredTv = featuredTvs && featuredTvs[0] || 0;
+  
+  const { posts: featuredFilms } = await getPosts({
+    cat: filmCat?.id,
+    ignore: [ featuredPost?.id, featuredMusic?.id, featuredTv?.id ]
+  });
+  const featuredFilm = featuredFilms && featuredFilms[0] || 0;
+
+  const { posts } = await getPosts({
+    page: 1,
+    perPage: perPage < total ? perPage : total,
+    ignore: [
+      featuredPost?.id,
+      featuredMusic?.id,
+      featuredTv?.id,
+      featuredFilm?.id
+    ]
+  });
+
+  return {
+    props: {
+      posts,
+      headerMenu,
+      featuredPost,
+      featuredMusic,
+      featuredFilm,
+      featuredTv,
+      total,
+      totalPages
+    },
+  }
+}
+
+const Index = ({
+  posts,
+  headerMenu,
+  featuredPost,
+  featuredMusic,
+  featuredFilm,
+  featuredTv,
+  total,
+  totalPages
+}) => {
+  const metaData = {
+    description: 'A pop culture blog focusing on tv, film, and music.',
+    image: featuredPost?._embedded['wp:featuredmedia']?.[0]?.source_url,
+    title: 'Era of Good Feeling'
   };
 
-  static async getInitialProps() {
-    try {
-      const [page, posts, pages] = await Promise.all([
-        wp
-          .pages()
-          .slug('welcome')
-          .embed()
-          .then(data => {
-            return data[0];
-          }),
-        wp.posts().embed(),
-        wp.pages().embed(),
-      ]);
-
-      return { page, posts, pages };
-    } catch (err) {
-      if (err.data.status === 403) {
-        tokenExpired();
-      }
-    }
-
-    return null;
-  }
-
-  componentDidMount() {
-    // 
-    // TODO: see about auth
-    // 
-    // const token = localStorage.getItem(Config.AUTH_TOKEN);
-    // if (token) {
-    //   wp.setHeaders('Authorization', `Bearer ${token}`);
-    //   wp.users()
-    //     .me()
-    //     .then(data => {
-    //       const { id } = data;
-    //       this.setState({ id });
-    //     })
-    //     .catch(err => {
-    //       if (err.data.status === 403) {
-    //         tokenExpired();
-    //       }
-    //     });
-    // }
-  }
-
-  render() {
-    const { id } = this.state;
-    const { posts, pages, headerMenu, page } = this.props;
-    const fposts = posts.map(post => {
-      return (
-        <ul key={post.slug}>
-          <li>
-            <Link
-              as={`/post/${post.slug}`}
-              href={`/post?slug=${post.slug}&apiRoute=post`}
-            >
-              <a>{post.title.rendered}</a>
-            </Link>
-          </li>
-        </ul>
-      );
-    });
-    const fpages = pages.map(ipage => {
-      if (ipage.slug !== 'welcome') {
-        return (
-          <ul key={ipage.slug}>
-            <li>
-              <Link
-                as={`/page/${ipage.slug}`}
-                href={`/post?slug=${ipage.slug}&apiRoute=page`}
-              >
-                <a>{ipage.title.rendered}</a>
-              </Link>
-            </li>
-          </ul>
-        );
-      }
-    });
-
-    return (
-      <Layout>
-        <div className="intro bg-black white ph3 pv4 ph5-m pv5-l flex flex-column flex-row-l">
-          <div className="color-logo w-50-l mr3-l">
-            <Logo width={440} height={280} />
-          </div>
-          <div className="subhed pr6-l">
-            <h1>{page.title.rendered}</h1>
-            <div className="dek">
-              You are now running a WordPress backend with a React frontend.
-            </div>
-            <div className="api-info b mt4">
-              Starter Kit supports both REST API and GraphQL
-              <div className="api-toggle">
-                <a className="rest" href="http://localhost:3000">REST API</a>
-                <a className="graphql" href="http://localhost:3001">GraphQL</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="recent flex mh4 mv4 w-two-thirds-l center-l">
-          <div className="w-50 pr3">
-            <h2>Posts</h2>
-            {fposts}
-          </div>
-          <div className="w-50 pl3">
-            <h2>Pages</h2>
-            {fpages}
-          </div>
-        </div>
-        <div className="content mh4 mv4 w-two-thirds-l center-l home"
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{
-            __html: page.content.rendered,
-          }}
+  return (
+    <Layout menu={headerMenu} metaData={metaData}>
+      <div>
+        <PostMediaLink
+          post={featuredPost}
+          isHeader
         />
-      </Layout>
-    );
-  }
+        <CatPostContainer>
+          <CatPostWrapper>
+            <CatPostHeaderWrapper>
+              <CatPostHeader>Music</CatPostHeader>
+            </CatPostHeaderWrapper>
+            <PostMediaLink
+              post={featuredMusic}
+              isSmall
+              isFeatureCatPost
+            />
+          </CatPostWrapper>
+          <CatPostWrapper>
+            <CatPostHeaderWrapper>
+              <CatPostHeader>Film</CatPostHeader>
+            </CatPostHeaderWrapper>
+            <PostMediaLink
+              post={featuredFilm}
+              isSmall
+              isFeatureCatPost
+            />
+          </CatPostWrapper>
+          <CatPostWrapper>
+            <CatPostHeaderWrapper>
+              <CatPostHeader>TV</CatPostHeader>
+            </CatPostHeaderWrapper>
+            <PostMediaLink
+              post={featuredTv}
+              isSmall
+              isFeatureCatPost
+            />
+          </CatPostWrapper>
+        </CatPostContainer>
+        <PostsContainer>
+          <PostList
+            total={total}
+            totalPages={totalPages}
+            posts={posts}
+            ignore={[
+              featuredPost?.id,
+              featuredMusic?.id,
+              featuredTv?.id,
+              featuredFilm?.id
+            ]}
+          />
+        </PostsContainer>
+      </div>
+    </Layout>
+  );
 }
 
 export default PageWrapper(Index);
