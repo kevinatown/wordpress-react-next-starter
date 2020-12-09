@@ -5,4 +5,5 @@ node_modules
 .next
 
 **/mariadb
+**/mod_twentytwenty.zip
 wordpress/src/setup/*.xml

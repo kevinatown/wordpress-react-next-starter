@@ -5,9 +5,9 @@ cd ./src/setup/
 zip -r ./mod_twentytwenty.zip ./mod_twentytwenty
 cd ../../
 
-eval $(aws ecr get-login --no-include-email --region us-east-1)
+eval $(aws ecr get-login --no-include-email --region <region>)
 
-docker build --no-cache -t headless-wordpress ./src/
+docker build --no-cache -t <WPServiceRepository> ./src/
 # change the <account-id> to your account id
-docker tag headless-wordpress:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/headless-wordpress
-docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/headless-wordpress:latest
+docker tag <WPServiceRepository> <WPServiceRepositoryUrl>
+docker push <WPServiceRepositoryUrl>

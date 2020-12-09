@@ -25,7 +25,9 @@ This project contains 5 CloudFormation scripts.  They must be created in order b
 - [EC2 Key Pair](https://console.aws.amazon.com/ec2/v2/home)
 - cim - (`npm install -g cim`)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+- [SSL cert](https://console.aws.amazon.com/acm/home/) 
 - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingHostedZone.html
+- 
 
 
 # Stacks
@@ -62,6 +64,15 @@ cd ecr
 cim stack-up
 ```
 
+You'll recive an output from this command something like:
+```
+Stack has been created!
+WPServiceRepositoryUrl = <accout_id>.dkr.ecr.<region>.amazonaws.com/STACK_NAME-wordpress
+WPServiceRepository = STACK_NAME-wordpress
+```
+
+These outputs will be needed 
+
 ### Wordpress
 Before we can launch this cloudformation stack.  We need to push our service image to ECR.
 
@@ -74,13 +85,14 @@ Make all needed changes then run (in `wordpress/src`):
 cd wordpress/src
 ```
 - [Registry Authentication](http://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth)
-  - `aws ecr get-login --registry-ids <account-id>`
-  - copy/past output to perform docker login,  also append `/headless-wp` to the repository url.
+  - `eval $(aws ecr get-login --no-include-email --region <region>)`
 - Build Image
-  - `docker build -t headless-wordpress .`
+  - `docker build -t <WPServiceRepository> .` (use the WPServiceRepository from the ecr step)
 - [Push Image](http://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
-  - `docker tag headless-wp <account>.dkr.ecr.<region>.amazonaws.com/headless-wordpress:latest`
-  - `docker push <account-id>.dkr.ecr.<region>.amazonaws.com/headless-wordpress`
+  - `docker tag <WPServiceRepository> <WPServiceRepositoryUrl>`
+  - `docker push <WPServiceRepositoryUrl>` 
+
+**NOTE** Theres a build script `scripts/build_wp.sh`, but before you use it, you must update all the `<>`s, such as `<region>`.
 
 #### Update Version
 Make sure the `Version` parameter, in _cim.yml, matches the `version` tag from above.  The ECS Task Definition will pull the image from ECR.

@@ -10,6 +10,7 @@ stack:
   #
   parameters:
     KeyPairName: '${env.KEYPAIR_NAME}'
+    AvailabilityZones: '${env.AWS_REGION}a, ${env.AWS_REGION}b'
 
   #
   # Define stack capabilities required.
