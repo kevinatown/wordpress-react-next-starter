@@ -131,7 +131,7 @@ Do it by it's self. DO:
 - update `config.js`
 
 # Running Locally
-- ensure `wordpress/src/maiadb` is deleted (this is needed for a fresh install)
+- ensure `wordpress/src/maiadb` is deleted (this is needed for a fresh install) or use INIT_DB="false"
 - `docker-compose build`
 - `docker-compose up`
 - `docker-compose down` to remove
