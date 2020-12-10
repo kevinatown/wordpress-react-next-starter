@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import styled, { css } from 'styled-components';
 import Router from 'next/router';
 import Config from '../../config';
-import SearchIcon from '../../public/static/images/search.svg';
 import NavItem from './NavItem';
 import { SIZES, COLORS } from '../../style';
 import { useScroll } from '../../context/scroll';

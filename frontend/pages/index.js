@@ -29,12 +29,14 @@ export async function getServerSideProps({ query }) {
     getPosts({})
   ]);
 
+  const featuredPost = featuredPosts && featuredPosts[0] || 0;
+
   // get the rest of the posts
   const { posts } = await getPosts({
     page: 1,
     perPage: perPage < total ? perPage : total,
     ignore: [
-      featuredPost?.id
+      featuredPost?.id 
     ]
   });
 

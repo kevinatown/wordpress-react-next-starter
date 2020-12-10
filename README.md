@@ -26,6 +26,7 @@ This project contains 5 CloudFormation scripts.  They must be created in order b
 - cim - (`npm install -g cim`)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 - [SSL cert](https://console.aws.amazon.com/acm/home/) 
+    + **NOTE:** SSL certs must be imported into us-east-1 if using a region besides that for the CDN
 - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingHostedZone.html
 - 
 
@@ -143,6 +144,7 @@ Do it by it's self. DO:
 - update `config.js`
 
 # Running Locally
+The following will run all items locally. To run only the FE locally see the readme in the `frontend` dir.
 - ensure `wordpress/src/maiadb` is deleted (this is needed for a fresh install) or use INIT_DB="false"
 - `docker-compose build`
 - `docker-compose up`
