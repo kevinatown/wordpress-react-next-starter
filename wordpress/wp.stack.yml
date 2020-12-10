@@ -63,14 +63,18 @@ Parameters:
     Type: String
     Description: Permalink structure for wordpress
     Default: '/%year%/%monthnum%/%day%/%postname%/'
-  WordpressXmlFile:
+  WordpressXMLFile:
     Type: String
-    Description: XML file for imports
+    Description: XML file for loading wp
     Default: ''
   WordpressDbCharset: 
     Type: String
     Description: Charset for DB 
     Default: 'utf8'
+  InitDB:
+    Type: String
+    Description: Determins if the DB needs to get intialized 
+    Default: ''
 
 Conditions:
   UseCustomDomain: !And
@@ -145,11 +149,13 @@ Resources:
               - 'HEAD'
               - 'GET'
             ForwardedValues:
-              QueryString: false
+              QueryString: true
+              QueryStringCacheKeys:
+                - '*'
               Cookies:
                 Forward: none
               Headers:
-                - All
+                - '*'
         Origins:
           -
             Id: !Ref MediaBucket
@@ -349,35 +355,11 @@ Resources:
             - Name: WORDPRESS_PERMALINK_STRUCTURE
               Value: !Sub "${WordpressPermalinkStructure}"
             - Name: WORDPRESS_XML_FILE
-              Value: !Sub "${WordpressXmlFile}"
+              Value: !Sub "${WordpressXMLFile}"
             - Name: WORDPRESS_DB_CHARSET
               Value: !Sub ${WordpressDbCharset}
-        # - Name: !Sub
-        #     - "frontend_${stack}"
-        #     - stack: !Ref AWS::StackName
-        #   Essential: true
-        #   Image: !Sub
-        #     - "${URL}:${Version}"
-        #     - {
-        #         URL: { "Fn::ImportValue" : {"Fn::Sub": "${ECRStack}-FrontendServiceRepositoryUrl" } },
-        #         Version: !Ref Version
-        #       }
-        #   Memory: 256
-        #   PortMappings:
-        #     - ContainerPort: 80
-        #   LogConfiguration:
-        #     LogDriver: awslogs
-        #     Options:
-        #       awslogs-group: !Ref AWS::StackName
-        #       awslogs-region: !Ref AWS::Region
-        #   Environment:
-        #     - Name: AWS_REGION
-        #       Value: !Ref AWS::Region
-        #     - Name: AWS_ACCOUNT_ID
-        #       Value: !Ref AWS::AccountId
-        #     - Name: IS_LOCAL
-        #       Value: 'false'
-
+            - Name: INIT_DB
+              Value: !Sub "${InitDB}"
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -447,12 +429,7 @@ Resources:
             - stack: !Ref AWS::StackName
           ContainerPort: 80
           TargetGroupArn: !Ref TargetGroup
-        # - ContainerName: !Sub
-        #     - "frontend_${stack}"
-        #     - stack: !Ref AWS::StackName
-        #   ContainerPort: 80
-        #   TargetGroupArn: !Ref TargetGroup
-
+          
 Outputs:
   Service:
     Value: !Ref 'Service'

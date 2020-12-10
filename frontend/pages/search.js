@@ -32,38 +32,14 @@ class Search extends Component {
     const { posts } = this.state;
     const { headerMenu } = this.props;
 
+    if (!headerMenu || !posts || headerMenu.length < 1 || posts.length < 1) {
+      return (<p>Coming soon</p>);
+    }
+
     return (
       <Layout>
         <Menu menu={headerMenu} />
-        <div className="content login mh4 mv4 w-two-thirds-l center-l">
-          <div>
-            <h1>Search</h1>
-            <input
-              className="db w-100 pa3 mv3 br6 ba b--black"
-              type="text"
-              placeholder="Search by name and content"
-              onChange={e => this.setState({ filter: e.target.value })}
-              onKeyDown={this.handleKeyDown}
-            />
-            <button
-              className="round-btn invert ba bw1 pv2 ph3"
-              type="button"
-              onClick={() => this.executeSearch()}
-            >
-              Submit
-            </button>
-          </div>
-          <div className="mv4">
-            {posts ? posts.map((post, index) => (
-              <div className="mv4" key={post.slug}>
-                <span className="gray">{index + 1}.</span>
-                <Link href={`/post/${post.slug}`}>
-                  <h3 className="ml1 dib pointer">{post.title.rendered}</h3>
-                </Link>
-              </div>
-            )) : ''}
-          </div>
-        </div>
+        <p>Coming soon..</p>
       </Layout>
     );
   }

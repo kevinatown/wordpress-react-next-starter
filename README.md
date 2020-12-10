@@ -1,3 +1,4 @@
+
 # Headless Wordpress Deployment using AWS CloudFormation
 Quikly spin up a headless Wordpress deployment using AWS CloudFormation.
 
@@ -24,38 +25,11 @@ This project contains 5 CloudFormation scripts.  They must be created in order b
 - [EC2 Key Pair](https://console.aws.amazon.com/ec2/v2/home)
 - cim - (`npm install -g cim`)
 - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
+- [SSL cert](https://console.aws.amazon.com/acm/home/) 
+    + **NOTE:** SSL certs must be imported into us-east-1 if using a region besides that for the CDN
 - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingHostedZone.html
+- 
 
-## Env File
-```
-STACK_NAME=
-TLD=
-DOMAIN=
-DATABASE_USERNAME=
-DATABASE_PASSWORD=
-KEYPAIR_NAME=
-AWS_REGION=
-SSL=
-WORDPRESS_URL=
-WORDPRESS_TITLE=
-WORDPRESS_ADMIN_USER=
-WORDPRESS_ADMIN_PASSWORD=
-WORDPRESS_ADMIN_EMAIL=
-WORDPRESS_PERMALINK_STRUCTURE=
-WORDPRESS_XML_FILE=
-```
-
-
-## Read Env File and run command
-
-```bash
-eval $(egrep -v '^#' ../.env | xargs) cim stack-up
-```
-
-delete stack:
-```bash
-eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
-```
 
 # Stacks
 
@@ -91,21 +65,35 @@ cd ecr
 cim stack-up
 ```
 
+You'll recive an output from this command something like:
+```
+Stack has been created!
+WPServiceRepositoryUrl = <accout_id>.dkr.ecr.<region>.amazonaws.com/STACK_NAME-wordpress
+WPServiceRepository = STACK_NAME-wordpress
+```
+
+These outputs will be needed 
+
 ### Wordpress
 Before we can launch this cloudformation stack.  We need to push our service image to ECR.
+
+#### Changes to WP-APIs
+Make all needed changes then run (in `wordpress/src`):
+`rm -f setup/mod_twentytwenty.zip && zip -r setup/mod_twentytwenty.zip setup/mod_twentytwenty`
+
 #### Push Image
 ```
 cd wordpress/src
 ```
 - [Registry Authentication](http://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth)
-  - `aws ecr get-login --registry-ids <account-id>`
-  - copy/past output to perform docker login,  also append `/headless-wp` to the repository url.
+  - `eval $(aws ecr get-login --no-include-email --region <region>)`
 - Build Image
-  - `docker build -t headless-wp:<version> .`
+  - `docker build -t <WPServiceRepository> .` (use the WPServiceRepository from the ecr step)
 - [Push Image](http://docs.aws.amazon.com/AmazonECR/latest/userguide/docker-push-ecr-image.html)
-  - `docker tag headless-wp:<version> <account-id>.dkr.ecr.<region>.amazonaws.com/headless-wp:latest`
-  - `docker tag headless-wp:<version> <account-id>.dkr.ecr.<region>.amazonaws.com/headless-wp:<version>`
-  - `docker push <account-id>.dkr.ecr.<region>.amazonaws.com/headless-wp`
+  - `docker tag <WPServiceRepository> <WPServiceRepositoryUrl>`
+  - `docker push <WPServiceRepositoryUrl>` 
+
+**NOTE** Theres a build script `scripts/build_wp.sh`, but before you use it, you must update all the `<>`s, such as `<region>`.
 
 #### Update Version
 Make sure the `Version` parameter, in _cim.yml, matches the `version` tag from above.  The ECS Task Definition will pull the image from ECR.
@@ -113,9 +101,11 @@ Make sure the `Version` parameter, in _cim.yml, matches the `version` tag from a
 #### Stack up
 Once the `Version` is set you can use `cim stack-up` to update the stack with the new version.
 
+**NOTE**: use the `INIT_DB` var to completely load the database using the XML file.
+
 ```
 cd wordpress
-cim stack-up
+eval $(egrep -v '^#' ../.env | xargs) cim stack-up
 ```
 
 # Wordpress
@@ -127,24 +117,24 @@ Next enable some of the plugins we added.
 
 Add a few blog posts and pages.
 
-Then check out the API. Ex: `https://cdn.<your_url>/wp-json/wp/v2/posts`
+Then check out the API. Ex: `https://cdn.<your_domain>/wp-json/wp/v2/posts`
 
 # Tear down
 ```
 cd wordpress
-cim stack-delete
+eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
 
 cd ecr
-cim stack-delete
+eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
 
 cd rds
-cim stack-delete
+eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
 
 cd ecs
-cim stack-delete
+eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
 
 cd vpc
-cim stack-delete
+eval $(egrep -v '^#' ../.env | xargs) cim stack-delete
 ```
 
 ## Frontend
@@ -152,3 +142,11 @@ cim stack-delete
 Do it by it's self. DO:
 - update `serverless.yml`
 - update `config.js`
+
+# Running Locally
+The following will run all items locally. To run only the FE locally see the readme in the `frontend` dir.
+- ensure `wordpress/src/maiadb` is deleted (this is needed for a fresh install) or use INIT_DB="false"
+- `docker-compose build`
+- `docker-compose up`
+- `docker-compose down` to remove
+- go to `frontend` and `IS_LOCAL=true npm run dev`
